@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md overflow-hidden;
+  }
+
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  }
+}
+
+/* 自定义字体 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&display=swap');
+
+@layer base {
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  
+  .font-heading {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+  }
+  
+  .font-price {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+  }
+}
+
+/* 动画效果 */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce 3s infinite;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+} 
