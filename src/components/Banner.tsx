@@ -5,6 +5,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 interface BannerItem {
   id: number;
   image: string;
+  imageWebp: string;
+  imageMobile: string;
   title: string;
   description: string;
 }
@@ -13,18 +15,24 @@ const bannerItems: BannerItem[] = [
   {
     id: 1,
     image: '/images/banner1.jpg',
+    imageWebp: '/images/banner1.webp',
+    imageMobile: '/images/banner1-mobile.jpg',
     title: '精选食材，用心烹饪',
     description: '严选优质食材，传承经典味道'
   },
   {
     id: 2,
     image: '/images/banner2.jpg',
+    imageWebp: '/images/banner2.webp',
+    imageMobile: '/images/banner2-mobile.jpg',
     title: '春季新品上市',
     description: '当季时令菜品，新鲜美味'
   },
   {
     id: 3,
     image: '/images/banner3.jpg',
+    imageWebp: '/images/banner3.webp',
+    imageMobile: '/images/banner3-mobile.jpg',
     title: '全城配送',
     description: '30分钟极速送达，美味不等待'
   }
@@ -40,6 +48,14 @@ const Banner: React.FC = () => {
       const nextIndex = (currentIndex + 1) % bannerItems.length;
       const img = new Image();
       img.src = bannerItems[nextIndex].image;
+      
+      // 预加载 WebP 版本
+      const imgWebp = new Image();
+      imgWebp.src = bannerItems[nextIndex].imageWebp;
+      
+      // 预加载移动端版本
+      const imgMobile = new Image();
+      imgMobile.src = bannerItems[nextIndex].imageMobile;
     };
 
     preloadNextImage();
@@ -75,14 +91,32 @@ const Banner: React.FC = () => {
               <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             </div>
           )}
-          <img
-            src={bannerItems[currentIndex].image}
-            alt={bannerItems[currentIndex].title}
-            className="w-full h-full object-cover"
-            loading="lazy"
-            onLoad={() => setIsLoading(false)}
-            style={{ opacity: isLoading ? 0 : 1 }}
-          />
+          <picture>
+            <source
+              srcSet={bannerItems[currentIndex].imageWebp}
+              type="image/webp"
+              media="(min-width: 768px)"
+            />
+            <source
+              srcSet={bannerItems[currentIndex].image}
+              type="image/jpeg"
+              media="(min-width: 768px)"
+            />
+            <source
+              srcSet={bannerItems[currentIndex].imageMobile}
+              type="image/jpeg"
+              media="(max-width: 767px)"
+            />
+            <img
+              src={bannerItems[currentIndex].image}
+              alt={bannerItems[currentIndex].title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              onLoad={() => setIsLoading(false)}
+              style={{ opacity: isLoading ? 0 : 1 }}
+              sizes="(max-width: 767px) 100vw, 100vw"
+            />
+          </picture>
           <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
             <div className="text-center text-white">
               <h2 className="text-3xl font-heading mb-2">{bannerItems[currentIndex].title}</h2>
