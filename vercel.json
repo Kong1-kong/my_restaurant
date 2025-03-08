@@ -6,7 +6,8 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "build",
-        "buildCommand": "npm run build"
+        "buildCommand": "npm run build",
+        "maxLambdaSize": "50mb"
       }
     }
   ],
@@ -14,37 +15,88 @@
     {
       "src": "/static/(.*)",
       "headers": {
-        "cache-control": "public, max-age=31536000, immutable"
+        "cache-control": "public, max-age=31536000, immutable",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
       },
-      "dest": "/static/$1"
+      "dest": "/static/$1",
+      "continue": true
     },
     {
       "src": "/images/(.*)",
       "headers": {
+        "cache-control": "public, max-age=31536000, immutable",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+      },
+      "dest": "/images/$1",
+      "continue": true
+    },
+    {
+      "src": "/(.*)\\.(?:jpg|jpeg|gif|png|svg|ico|webp)$",
+      "headers": {
         "cache-control": "public, max-age=31536000, immutable"
       },
-      "dest": "/images/$1"
+      "continue": true
+    },
+    {
+      "src": "/(.*)\\.(?:js|css|json)$",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      },
+      "continue": true
     },
     {
       "src": "/favicon.ico",
       "headers": {
-        "cache-control": "public, max-age=31536000, immutable"
+        "cache-control": "public, max-age=31536000, immutable",
+        "Access-Control-Allow-Origin": "*"
       },
       "dest": "/favicon.ico"
     },
     {
       "src": "/manifest.json",
       "headers": {
-        "cache-control": "public, max-age=31536000, immutable"
+        "cache-control": "public, max-age=31536000, immutable",
+        "Access-Control-Allow-Origin": "*"
       },
       "dest": "/manifest.json"
     },
     {
       "src": "/(.*)",
-      "headers": {
-        "cache-control": "public, max-age=0, must-revalidate"
-      },
       "dest": "/index.html"
     }
-  ]
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "regions": ["hnd1", "sin1", "sfo1"],
+  "functions": {
+    "api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 } 
