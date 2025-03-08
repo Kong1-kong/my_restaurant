@@ -32,13 +32,24 @@ const bannerItems: BannerItem[] = [
 
 const Banner: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // 预加载下一张图片
+    const preloadNextImage = () => {
+      const nextIndex = (currentIndex + 1) % bannerItems.length;
+      const img = new Image();
+      img.src = bannerItems[nextIndex].image;
+    };
+
+    preloadNextImage();
+
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % bannerItems.length);
     }, 5000);
+
     return () => clearInterval(timer);
-  }, []);
+  }, [currentIndex]);
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % bannerItems.length);
@@ -49,7 +60,7 @@ const Banner: React.FC = () => {
   };
 
   return (
-    <div className="relative h-[400px] overflow-hidden">
+    <div className="relative h-[400px] overflow-hidden bg-gray-100">
       {bannerItems.length > 0 && (
         <motion.div
           key={currentIndex}
@@ -59,10 +70,18 @@ const Banner: React.FC = () => {
           transition={{ duration: 0.5 }}
           className="absolute inset-0"
         >
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
           <img
             src={bannerItems[currentIndex].image}
             alt={bannerItems[currentIndex].title}
             className="w-full h-full object-cover"
+            loading="lazy"
+            onLoad={() => setIsLoading(false)}
+            style={{ opacity: isLoading ? 0 : 1 }}
           />
           <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
             <div className="text-center text-white">
@@ -76,13 +95,15 @@ const Banner: React.FC = () => {
       {/* 导航按钮 */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full hover:bg-opacity-75"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full hover:bg-opacity-75 transition-all"
+        aria-label="上一张"
       >
         <ChevronLeftIcon className="h-6 w-6" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full hover:bg-opacity-75"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full hover:bg-opacity-75 transition-all"
+        aria-label="下一张"
       >
         <ChevronRightIcon className="h-6 w-6" />
       </button>
@@ -93,9 +114,10 @@ const Banner: React.FC = () => {
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full ${
+            className={`w-2 h-2 rounded-full transition-all ${
               index === currentIndex ? 'bg-white' : 'bg-white bg-opacity-50'
             }`}
+            aria-label={`切换到第 ${index + 1} 张图片`}
           />
         ))}
       </div>
